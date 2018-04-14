@@ -176,6 +176,25 @@ describe("Where", () => {
         });
     });
 
+    it("Select using (multiple) OR statements.", (done: MochaDone) => {
+        usersDB(ExampleDataModel, (nSQL) => {
+            nSQL.loadJS("users", ExampleUsers).then(() => {
+                nSQL.table("users").query("select").where([["name", "=", "Bill"], "OR", ["age", "=", 21], "OR", ["email", "=", "jeb@gmail.com"]]).exec().then((rows) => {
+                    try {
+                        expect(rows).to.deep.equal([
+                            {id: 1, name: "Bill", age: 20, email: "bill@gmail.com", meta: {value: 1}, posts: [1, 3]},
+                            {id: 2, name: "Jeb", age: 24, email: "jeb@gmail.com", meta: {value: 1}, posts: [1]},
+                            {id: 3, name: "Bob", age: 21, email: "bob@gmail.com", meta: {value: 1}, posts: [1, 2, 3]}
+                        ], "Seconday index select failed!");
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+            });
+        });
+    });
+
     it("Select using range.", (done: MochaDone) => {
         usersDB(ExampleDataModel, (nSQL) => {
             nSQL.loadJS("users", ExampleUsers).then(() => {

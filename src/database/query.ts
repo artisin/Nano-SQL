@@ -1549,7 +1549,7 @@ const _where = (singleRow: any, where: any[], rowIDX: number, ignoreFirstPath?: 
         let hasAnd = false;
         // turn where statement into array of booleans and conditions
         // [[id, "=", 1], "OR", ["this", "=", "that"]] => [true, "OR", false];
-        let checkWhere = where.map((wArg, idx) => {
+        let checkWhere: any[] = where.map((wArg, idx) => {
             if (commands.indexOf(wArg) !== -1) {
                 if (wArg === "AND") hasAnd = true;
                 return wArg;
@@ -1572,9 +1572,9 @@ const _where = (singleRow: any, where: any[], rowIDX: number, ignoreFirstPath?: 
         // remove the undefined elements from the above action
         // [undefined, false, undefined, undefined, false, undefined, "AND", true] => [false, false, true]
         // checkWhere = checkWhere.filter(val => val !== undefined && val !== "AND");
-
         // if there are any false bools in the array the row doesn't match.
-        return checkWhere.indexOf(false) === -1;
+        // @hotfix → attached to issue #19
+        return !hasAnd ? checkWhere.indexOf(true) !== -1 : checkWhere.indexOf(false) === -1;
 
         /*
 
